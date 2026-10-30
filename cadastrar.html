@@ -69,7 +69,10 @@
         </label>
         <label class="campo">
           <span class="rotulo">Cidade *</span>
-          <select name="cidade" required disabled><option value="">Escolha o estado</option></select>
+          <select name="cidade" required disabled
+            data-sem-uf="Escolha o estado primeiro" data-carregando="Carregando cidades…" data-escolha="Escolha a cidade">
+            <option value="">Escolha o estado primeiro</option>
+          </select>
           <small class="erro" data-erro="cidade"></small>
         </label>
       </div>
