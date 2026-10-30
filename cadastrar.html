@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cadastrar empresa · Catálogo Vermelho</title>
+  <meta name="description" content="Inclua sua empresa no Catálogo Vermelho.">
+  <meta name="theme-color" content="#c8102e">
+  <link rel="icon" href="img/estrela.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;700;900&display=swap">
+  <link rel="stylesheet" href="css/estilo.css">
+  <script type="module" src="js/cadastro.js"></script>
+</head>
+<body>
+  <header class="cartaz cartaz--compacto">
+    <div class="cartaz__cunha" aria-hidden="true"></div>
+    <a class="voltar" href="./">← Catálogo</a>
+    <h1 class="cartaz__titulo">Aliste<br><span>sua empresa</span></h1>
+  </header>
+
+  <main class="conteudo conteudo--estreito">
+    <p id="aviso-demo" class="faixa" hidden>Modo demonstração: o cadastro fica salvo só neste navegador.</p>
+
+    <form id="cadastro" class="ficha" novalidate>
+      <label class="campo">
+        <span class="rotulo">Nome da empresa *</span>
+        <input name="nome" required maxlength="80" autocomplete="organization">
+        <small class="erro" data-erro="nome"></small>
+      </label>
+
+      <label class="campo">
+        <span class="rotulo">Instagram *</span>
+        <input name="instagram" required placeholder="@suaempresa" autocapitalize="off" spellcheck="false">
+        <small class="erro" data-erro="instagram"></small>
+      </label>
+
+      <label class="campo">
+        <span class="rotulo">Ramo *</span>
+        <select name="categoria" required><option value="">Escolha…</option></select>
+        <small class="erro" data-erro="categoria"></small>
+      </label>
+
+      <label class="campo">
+        <span class="rotulo">Descrição</span>
+        <textarea name="descricao" maxlength="280" rows="3" placeholder="O que você vende, horários…"></textarea>
+        <small class="erro" data-erro="descricao"></small>
+      </label>
+
+      <label class="campo">
+        <span class="rotulo">Site ou loja (iFood, WhatsApp, etc.)</span>
+        <input name="site" type="url" inputmode="url" placeholder="https://www.ifood.com.br/delivery/…">
+        <small class="erro" data-erro="site"></small>
+      </label>
+
+      <div class="campo-duplo">
+        <label class="campo">
+          <span class="rotulo">Estado *</span>
+          <select name="uf" required><option value="">UF…</option></select>
+          <small class="erro" data-erro="uf"></small>
+        </label>
+        <label class="campo">
+          <span class="rotulo">Cidade *</span>
+          <select name="cidade" required disabled><option value="">Escolha o estado</option></select>
+          <small class="erro" data-erro="cidade"></small>
+        </label>
+      </div>
+
+      <div class="campo">
+        <label class="rotulo" for="coordenadas">Coordenada GPS *</label>
+        <div class="campo__linha">
+          <input id="coordenadas" name="coordenadas" required inputmode="decimal" placeholder="-23.55052, -46.63331">
+          <button type="button" id="localizar" class="botao botao--contorno">
+            <svg aria-hidden="true"><use href="img/icones.svg#alvo"/></svg> Usar minha localização
+          </button>
+        </div>
+        <small class="dica">Faça isso no local da empresa ou cole a coordenada do Google Maps (clique com o botão direito no mapa).</small>
+        <small class="erro" data-erro="coordenadas"></small>
+      </div>
+
+      <button class="botao botao--manifesto botao--largo" type="submit">Enviar para aprovação</button>
+      <p id="resultado" class="status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+</body>
+</html>
