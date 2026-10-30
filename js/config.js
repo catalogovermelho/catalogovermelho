@@ -7,4 +7,4 @@ export const SUPABASE_ANON_KEY = 'sb_publishable_KomMUMTRynxDxWGcNTp5sw_uTvzf-CB
 
 // Cloudflare Turnstile (dash.cloudflare.com → Turnstile): site key pública do captcha.
 // Para testar localmente use a chave de teste 1x00000000000000000000AA.
-export const TURNSTILE_SITE_KEY = '';
+export const TURNSTILE_SITE_KEY = '0x4AAAAAAFskCVz1GJa7yJWp';
