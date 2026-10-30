@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Catálogo Vermelho</title>
+  <meta name="description" content="Catálogo popular de empresas locais por estado, cidade e ramo.">
+  <meta name="theme-color" content="#c8102e">
+  <link rel="icon" href="img/estrela.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;700;900&display=swap">
+  <link rel="stylesheet" href="css/estilo.css">
+  <script type="module" src="js/catalogo.js"></script>
+</head>
+<body>
+  <header class="cartaz">
+    <div class="cartaz__cunha" aria-hidden="true"></div>
+    <svg class="cartaz__estrela" aria-hidden="true"><use href="img/icones.svg#estrela"/></svg>
+    <p class="cartaz__chamada">Comerciantes de todo o Brasil,</p>
+    <h1 class="cartaz__titulo">Catálogo<br><span>Vermelho</span></h1>
+    <p class="cartaz__chamada cartaz__chamada--fim">uni-vos!</p>
+    <a class="botao botao--manifesto" href="cadastrar.html">Cadastre sua empresa</a>
+  </header>
+
+  <main class="conteudo">
+    <p id="aviso-demo" class="faixa" hidden>Modo demonstração: dados fictícios salvos só neste navegador.</p>
+
+    <form id="filtros" class="filtros" role="search">
+      <label class="filtros__busca">
+        <span class="sr-only">Buscar</span>
+        <input type="search" name="q" placeholder="Buscar por nome, produto ou @" autocomplete="off">
+      </label>
+      <label>
+        <span class="rotulo">Estado</span>
+        <select name="uf"><option value="">Todo o Brasil</option></select>
+      </label>
+      <label>
+        <span class="rotulo">Cidade</span>
+        <select name="cidade" disabled><option value="">Todas</option></select>
+      </label>
+      <button type="button" id="perto" class="botao botao--contorno" aria-pressed="false">
+        <svg aria-hidden="true"><use href="img/icones.svg#alvo"/></svg> Perto de mim
+      </button>
+      <fieldset class="ramos">
+        <legend class="sr-only">Ramo</legend>
+        <label class="ramo"><input type="radio" name="categoria" value="" checked><span>Todos</span></label>
+      </fieldset>
+    </form>
+
+    <p id="status" class="status" role="status" aria-live="polite"></p>
+    <ol id="lista" class="lista"></ol>
+    <button type="button" id="mais" class="botao botao--largo" hidden>Carregar mais</button>
+  </main>
+
+  <footer class="rodape">
+    <p>Feito pelo povo, para o povo. Divulgue o comércio do seu bairro.</p>
+  </footer>
+
+  <template id="tpl-empresa">
+    <li class="empresa">
+      <p class="empresa__ramo"></p>
+      <h2 class="empresa__nome"></h2>
+      <p class="empresa__local"></p>
+      <p class="empresa__descricao"></p>
+      <div class="empresa__acoes">
+        <a class="icone-link empresa__instagram" target="_blank" rel="noopener nofollow ugc">
+          <svg aria-hidden="true"><use href="img/icones.svg#instagram"/></svg>
+          <span class="empresa__arroba"></span>
+        </a>
+        <a class="icone-link empresa__site" target="_blank" rel="noopener nofollow ugc" hidden>
+          <svg aria-hidden="true"><use href="img/icones.svg#link"/></svg> Site / loja
+        </a>
+        <details class="rota">
+          <summary class="icone-link">
+            <svg aria-hidden="true"><use href="img/icones.svg#pino"/></svg>
+            <span class="rota__coordenada"></span>
+          </summary>
+          <ul class="rota__menu"></ul>
+        </details>
+      </div>
+    </li>
+  </template>
+</body>
+</html>
