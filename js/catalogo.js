@@ -31,6 +31,18 @@ function sincronizarUrl(filtros) {
   history.replaceState(null, '', busca);
 }
 
+/**
+ * Só exibe o avatar quando ele carrega de fato; imagem vazia ou erro some do cartão.
+ * Usa opacidade (não `hidden`) porque imagem lazy oculta com display:none nunca carrega.
+ */
+function mostrarAvatar(avatar, instagram) {
+  avatar.addEventListener('load', () => {
+    if (avatar.naturalWidth > 1) avatar.classList.add('carregado'); else avatar.remove();
+  }, { once: true });
+  avatar.addEventListener('error', () => avatar.remove(), { once: true });
+  avatar.src = fotoInstagram(instagram);
+}
+
 function renderizarEmpresa(empresa) {
   const no = modelo.content.firstElementChild.cloneNode(true);
   const definir = (seletor, texto) => { no.querySelector(seletor).textContent = texto; };
@@ -47,9 +59,7 @@ function renderizarEmpresa(empresa) {
   instagram.setAttribute('aria-label', `Instagram de ${empresa.nome}`);
   definir('.empresa__arroba', `@${empresa.instagram}`);
 
-  const avatar = no.querySelector('.empresa__avatar');
-  avatar.addEventListener('error', () => avatar.remove(), { once: true });
-  avatar.src = fotoInstagram(empresa.instagram);
+  mostrarAvatar(no.querySelector('.empresa__avatar'), empresa.instagram);
 
   if (empresa.site) {
     const site = no.querySelector('.empresa__site');
