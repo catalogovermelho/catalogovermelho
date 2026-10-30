@@ -24,6 +24,7 @@
   </header>
 
   <main class="conteudo">
+    <p id="aviso-cadastro" class="faixa faixa--vermelha" role="status" hidden></p>
     <p id="aviso-demo" class="faixa" hidden>Modo demonstração: dados fictícios salvos só neste navegador.</p>
 
     <form id="filtros" class="filtros" role="search">
@@ -32,20 +33,20 @@
         <input type="search" name="q" placeholder="Buscar por nome, produto ou @" autocomplete="off">
       </label>
       <label>
+        <span class="rotulo">Ramo</span>
+        <select name="categoria"><option value="">Todos</option></select>
+      </label>
+      <label>
         <span class="rotulo">Estado</span>
         <select name="uf"><option value="">Todo o Brasil</option></select>
       </label>
-      <label>
+      <label class="filtros__cidade">
         <span class="rotulo">Cidade</span>
         <select name="cidade" disabled><option value="">Todas</option></select>
       </label>
       <button type="button" id="perto" class="botao botao--contorno" aria-pressed="false">
         <svg aria-hidden="true"><use href="img/icones.svg#alvo"/></svg> Perto de mim
       </button>
-      <fieldset class="ramos">
-        <legend class="sr-only">Ramo</legend>
-        <label class="ramo"><input type="radio" name="categoria" value="" checked><span>Todos</span></label>
-      </fieldset>
     </form>
 
     <p id="status" class="status" role="status" aria-live="polite"></p>
@@ -60,7 +61,10 @@
   <template id="tpl-empresa">
     <li class="empresa">
       <p class="empresa__ramo"></p>
-      <h2 class="empresa__nome"></h2>
+      <div class="empresa__titulo">
+        <img class="empresa__avatar" alt="" width="64" height="64" loading="lazy" decoding="async">
+        <h2 class="empresa__nome"></h2>
+      </div>
       <p class="empresa__local"></p>
       <p class="empresa__descricao"></p>
       <div class="empresa__acoes">

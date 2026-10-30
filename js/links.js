@@ -2,6 +2,10 @@ const coord = ({ lat, lng }) => `${lat},${lng}`;
 
 export const linkInstagram = (instagram) => `https://www.instagram.com/${encodeURIComponent(instagram)}/`;
 
+/** Foto de perfil via unavatar.io; sem foto, responde 404 (fallback=false) e o cartão a omite. */
+export const fotoInstagram = (instagram) =>
+  `https://unavatar.io/instagram/${encodeURIComponent(instagram)}?fallback=false`;
+
 /** Apps de rota oferecidos ao clicar na coordenada. */
 export function linksDeRota(empresa) {
   const { lat, lng, nome } = empresa;

@@ -3,7 +3,7 @@ import { distanciaKm } from './geo.js';
 import { normalizar } from './texto.js';
 import { EMPRESAS_DEMO } from './demo.js';
 
-export const TAMANHO_PAGINA = 24;
+export const TAMANHO_PAGINA = 20;
 export const modoDemo = !(SUPABASE_URL && SUPABASE_ANON_KEY);
 
 export class ErroCadastro extends Error {}

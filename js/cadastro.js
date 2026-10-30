@@ -47,14 +47,9 @@ async function enviar(evento) {
   botaoEnviar.disabled = true;
   try {
     await cadastrarEmpresa(empresa, captcha);
-    form.reset();
-    form.elements.cidade.disabled = true;
-    resultado.textContent = modoDemo
-      ? 'Cadastrado! Já aparece no catálogo deste navegador.'
-      : 'Recebido, camarada! Sua empresa aparece no catálogo após a aprovação.';
+    location.assign('./?cadastro=ok');
   } catch (erro) {
     resultado.textContent = erro instanceof ErroCadastro ? erro.message : 'Falha ao enviar. Tente novamente.';
-  } finally {
     botaoEnviar.disabled = false;
     renovarCaptcha();
   }
