@@ -32,15 +32,19 @@ function sincronizarUrl(filtros) {
 }
 
 /**
- * Só exibe o avatar quando ele carrega de fato; imagem vazia ou erro some do cartão.
+ * Tenta a imagem cadastrada e depois a foto do Instagram; se nenhuma carregar, remove o avatar.
  * Usa opacidade (não `hidden`) porque imagem lazy oculta com display:none nunca carrega.
  */
-function mostrarAvatar(avatar, instagram) {
+function mostrarAvatar(avatar, { imagem, instagram }) {
+  const fontes = [imagem, fotoInstagram(instagram)].filter(Boolean);
+  const proxima = () => {
+    if (fontes.length) avatar.src = fontes.shift(); else avatar.remove();
+  };
   avatar.addEventListener('load', () => {
-    if (avatar.naturalWidth > 1) avatar.classList.add('carregado'); else avatar.remove();
-  }, { once: true });
-  avatar.addEventListener('error', () => avatar.remove(), { once: true });
-  avatar.src = fotoInstagram(instagram);
+    if (avatar.naturalWidth > 1) avatar.classList.add('carregado'); else proxima();
+  });
+  avatar.addEventListener('error', proxima);
+  proxima();
 }
 
 function renderizarEmpresa(empresa) {
@@ -59,7 +63,7 @@ function renderizarEmpresa(empresa) {
   instagram.setAttribute('aria-label', `Instagram de ${empresa.nome}`);
   definir('.empresa__arroba', `@${empresa.instagram}`);
 
-  mostrarAvatar(no.querySelector('.empresa__avatar'), empresa.instagram);
+  mostrarAvatar(no.querySelector('.empresa__avatar'), empresa);
 
   if (empresa.site) {
     const site = no.querySelector('.empresa__site');

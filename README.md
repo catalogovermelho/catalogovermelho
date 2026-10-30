@@ -4,7 +4,7 @@ Catálogo de empresas locais com estética de cartaz construtivista. Site estát
 
 - Filtros por estado, cidade (lista do IBGE) e ramo, com busca por nome, descrição ou @.
 - "Perto de mim": ordena pela distância até a sua localização.
-- Cada empresa tem link para o Instagram, para o site/loja (iFood etc.) e um menu de rota (Google Maps, Waze, Uber, Apple Maps).
+- Cada empresa mostra a imagem cadastrada (link https) ou, sem ela, a foto de perfil do Instagram; tem link para o Instagram, para o site/loja (iFood etc.) e um menu de rota (Google Maps, Waze, Uber, Apple Maps).
 - Filtros ficam na URL, então uma busca pode ser compartilhada.
 - Cadastro com nome, Instagram e coordenada GPS obrigatórios, que só aparece depois de aprovado.
 
