@@ -52,7 +52,8 @@ create index if not exists empresas_filtros_idx
 create index if not exists empresas_busca_trgm_idx
   on public.empresas using gin (busca extensions.gin_trgm_ops) where aprovado;
 
--- Segurança: o público só lê aprovadas e só cadastra como não aprovada (moderação).
+-- Segurança: o público só lê aprovadas (via buscar_empresas). Cadastro só pela
+-- Edge Function `cadastrar`, que valida o captcha e usa a service role.
 alter table public.empresas enable row level security;
 
 drop policy if exists "leitura de aprovadas" on public.empresas;
@@ -60,12 +61,8 @@ create policy "leitura de aprovadas" on public.empresas
   for select to anon, authenticated using (aprovado);
 
 drop policy if exists "cadastro pendente" on public.empresas;
-create policy "cadastro pendente" on public.empresas
-  for insert to anon, authenticated with check (not aprovado);
 
 revoke all on public.empresas from anon, authenticated;
-grant insert (nome, instagram, categoria, descricao, site, uf, cidade, lat, lng)
-  on public.empresas to anon, authenticated;
 
 -- Busca única: filtros + texto + ordenação por distância (haversine, sem PostGIS).
 -- security definer para ler a tabela sem expor SELECT direto; o filtro de aprovação fica aqui.

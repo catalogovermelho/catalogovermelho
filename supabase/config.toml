@@ -1,0 +1,3 @@
+# A função é chamada com a publishable key (não é JWT); o captcha faz a proteção.
+[functions.cadastrar]
+verify_jwt = false

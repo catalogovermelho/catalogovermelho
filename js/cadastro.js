@@ -1,5 +1,6 @@
 import { CATEGORIAS } from './dominio.js';
 import { cadastrarEmpresa, ErroCadastro, modoDemo } from './repositorio.js';
+import { montarCaptcha, renovarCaptcha, tokenCaptcha } from './captcha.js';
 import { obterPosicao } from './geo.js';
 import { validarEmpresa } from './validacao.js';
 import { adicionarOpcoes, preencherCidades, preencherUfs } from './ui.js';
@@ -37,9 +38,15 @@ async function enviar(evento) {
   mostrarErros(erros);
   if (!empresa) return;
 
+  const captcha = tokenCaptcha();
+  if (!modoDemo && !captcha) {
+    resultado.textContent = 'Confirme que você não é um robô.';
+    return;
+  }
+
   botaoEnviar.disabled = true;
   try {
-    await cadastrarEmpresa(empresa);
+    await cadastrarEmpresa(empresa, captcha);
     form.reset();
     form.elements.cidade.disabled = true;
     resultado.textContent = modoDemo
@@ -49,6 +56,7 @@ async function enviar(evento) {
     resultado.textContent = erro instanceof ErroCadastro ? erro.message : 'Falha ao enviar. Tente novamente.';
   } finally {
     botaoEnviar.disabled = false;
+    renovarCaptcha();
   }
 }
 
@@ -62,6 +70,9 @@ function iniciar() {
   });
   document.getElementById('localizar').addEventListener('click', preencherLocalizacao);
   form.addEventListener('submit', enviar);
+  if (!modoDemo) {
+    montarCaptcha(document.getElementById('captcha')).catch((erro) => { resultado.textContent = erro.message; });
+  }
 }
 
 iniciar();
