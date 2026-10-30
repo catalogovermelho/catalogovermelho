@@ -1,7 +1,7 @@
 import { CATEGORIAS, nomeCategoria } from './dominio.js';
 import { buscarEmpresas, modoDemo, TAMANHO_PAGINA } from './repositorio.js';
 import { formatarDistancia, obterPosicao } from './geo.js';
-import { linkInstagram, linksDeRota } from './links.js';
+import { fotoInstagram, linkInstagram, linksDeRota } from './links.js';
 import { debounce } from './texto.js';
 import { preencherCidades, preencherUfs } from './ui.js';
 
@@ -46,6 +46,10 @@ function renderizarEmpresa(empresa) {
   instagram.href = linkInstagram(empresa.instagram);
   instagram.setAttribute('aria-label', `Instagram de ${empresa.nome}`);
   definir('.empresa__arroba', `@${empresa.instagram}`);
+
+  const avatar = no.querySelector('.empresa__avatar');
+  avatar.addEventListener('error', () => avatar.remove(), { once: true });
+  avatar.src = fotoInstagram(empresa.instagram);
 
   if (empresa.site) {
     const site = no.querySelector('.empresa__site');
@@ -137,8 +141,18 @@ async function restaurarFiltros() {
   if (uf.value) await preencherCidades(cidade, uf.value, params.get('cidade') ?? '').catch(() => {});
 }
 
+function mostrarAvisoCadastro() {
+  if (new URLSearchParams(location.search).get('cadastro') !== 'ok') return;
+  const aviso = document.getElementById('aviso-cadastro');
+  aviso.textContent = modoDemo
+    ? 'Cadastrado! Sua empresa já aparece no catálogo deste navegador.'
+    : 'Recebido, camarada! Sua empresa aparece no catálogo após a aprovação.';
+  aviso.hidden = false;
+}
+
 function iniciar() {
   document.getElementById('aviso-demo').hidden = !modoDemo;
+  mostrarAvisoCadastro();
   preencherUfs(form.elements.uf);
   montarRamos();
 

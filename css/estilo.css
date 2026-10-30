@@ -151,6 +151,8 @@ svg { width: 1.2em; height: 1.2em; flex: none; }
   transform: rotate(-1deg);
 }
 
+.faixa--vermelha { background: var(--vermelho); transform: rotate(1deg); }
+
 .rotulo {
   display: block;
   margin-bottom: .25rem;
@@ -255,6 +257,18 @@ input[aria-invalid='true'], select[aria-invalid='true'] { border-color: var(--ve
   text-transform: uppercase;
   letter-spacing: .06em;
   transform: rotate(-3deg);
+}
+
+.empresa__titulo { display: flex; align-items: center; gap: .75rem; }
+
+.empresa__avatar {
+  flex: none;
+  width: 4rem;
+  height: 4rem;
+  border: var(--borda);
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--papel-escuro);
 }
 
 .empresa__nome {
