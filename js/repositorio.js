@@ -24,11 +24,9 @@ export function cadastrarEmpresa(empresa) {
 // ---------- Supabase (PostgREST via fetch, sem SDK) ----------
 
 async function postRest(caminho, corpo, { signal, prefer } = {}) {
-  const headers = {
-    apikey: SUPABASE_ANON_KEY,
-    Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
-    'Content-Type': 'application/json',
-  };
+  const headers = { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
+  // Chave legada (JWT) também vai no Authorization; a publishable (sb_publishable_…) não.
+  if (SUPABASE_ANON_KEY.startsWith('eyJ')) headers.Authorization = `Bearer ${SUPABASE_ANON_KEY}`;
   if (prefer) headers.Prefer = prefer;
 
   const resposta = await fetch(`${SUPABASE_URL}/rest/v1/${caminho}`, {

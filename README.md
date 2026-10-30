@@ -21,7 +21,7 @@ Sem configuração o site roda em **modo demonstração**: dados fictícios e ca
 
 1. Crie um projeto em [supabase.com](https://supabase.com).
 2. No SQL Editor, rode `supabase/schema.sql`.
-3. Em Settings → API, copie a URL e a `anon key` para `js/config.js`.
+3. Clique em **Connect** no topo do painel (ou Project Settings → API Keys) e copie a Project URL e a **Publishable key** (`sb_publishable_…`) para `js/config.js`. A anon key antiga, na aba *Legacy API Keys*, também funciona.
 
 A anon key é pública por design. A segurança fica no banco: o público só consegue cadastrar (sempre como `pendente`) e só lê empresas aprovadas, via a função `buscar_empresas`.
 
