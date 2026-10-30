@@ -6,7 +6,7 @@ Catálogo de empresas locais com estética de cartaz construtivista. Site estát
 - "Perto de mim": ordena pela distância até a sua localização.
 - Cada empresa tem link para o Instagram, para o site/loja (iFood etc.) e um menu de rota (Google Maps, Waze, Uber, Apple Maps).
 - Filtros ficam na URL, então uma busca pode ser compartilhada.
-- Cadastro com nome, Instagram e coordenada GPS obrigatórios, que entra como **pendente** até ser aprovado.
+- Cadastro com nome, Instagram e coordenada GPS obrigatórios, que só aparece depois de aprovado.
 
 ## Rodar localmente
 
@@ -23,12 +23,12 @@ Sem configuração o site roda em **modo demonstração**: dados fictícios e ca
 2. No SQL Editor, rode `supabase/schema.sql`.
 3. Clique em **Connect** no topo do painel (ou Project Settings → API Keys) e copie a Project URL e a **Publishable key** (`sb_publishable_…`) para `js/config.js`. A anon key antiga, na aba *Legacy API Keys*, também funciona.
 
-A anon key é pública por design. A segurança fica no banco: o público só consegue cadastrar (sempre como `pendente`) e só lê empresas aprovadas, via a função `buscar_empresas`.
+A anon key é pública por design. A segurança fica no banco: o público só consegue cadastrar (sempre com `aprovado = false`) e só lê empresas aprovadas, via a função `buscar_empresas`.
 
-**Moderação:** aprove no Table Editor mudando `status` para `aprovado`, ou:
+**Moderação:** no Table Editor, marque a caixa `aprovado` da empresa, ou:
 
 ```sql
-update public.empresas set status = 'aprovado' where id = 123;
+update public.empresas set aprovado = true where id = 123;
 ```
 
 ## Publicar no GitHub Pages

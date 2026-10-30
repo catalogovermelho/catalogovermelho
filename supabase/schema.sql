@@ -19,14 +19,25 @@ create table if not exists public.empresas (
   cidade     text not null check (char_length(cidade) between 2 and 60),
   lat        double precision not null check (lat between -34 and 6),
   lng        double precision not null check (lng between -74 and -28),
-  status     text not null default 'pendente' check (status in ('pendente', 'aprovado', 'rejeitado')),
+  aprovado   boolean not null default false,
   busca      text not null default '',
   criado_em  timestamptz not null default now()
 );
 
+-- Migração: bancos criados com a coluna antiga `status` passam a usar `aprovado`.
+alter table public.empresas add column if not exists aprovado boolean not null default false;
+do $$
+begin
+  if exists (select 1 from information_schema.columns
+             where table_schema = 'public' and table_name = 'empresas' and column_name = 'status') then
+    update public.empresas set aprovado = (status = 'aprovado');
+    alter table public.empresas drop column status cascade;
+  end if;
+end $$;
+
 -- Texto de busca normalizado (minúsculo, sem acento), mesma regra de js/texto.js.
 create or replace function public.empresas_preencher_busca()
-returns trigger language plpgsql set search_path = '' as $$
+returns trigger language plpgsql security definer set search_path = '' as $$
 begin
   new.busca := lower(extensions.unaccent(concat_ws(' ', new.nome, new.instagram, new.descricao)));
   return new;
@@ -37,27 +48,27 @@ create trigger empresas_busca before insert or update of nome, instagram, descri
   on public.empresas for each row execute function public.empresas_preencher_busca();
 
 create index if not exists empresas_filtros_idx
-  on public.empresas (uf, cidade, categoria) where status = 'aprovado';
+  on public.empresas (uf, cidade, categoria) where aprovado;
 create index if not exists empresas_busca_trgm_idx
-  on public.empresas using gin (busca extensions.gin_trgm_ops) where status = 'aprovado';
+  on public.empresas using gin (busca extensions.gin_trgm_ops) where aprovado;
 
--- Segurança: o público só lê aprovadas e só cadastra como pendente (moderação).
+-- Segurança: o público só lê aprovadas e só cadastra como não aprovada (moderação).
 alter table public.empresas enable row level security;
 
 drop policy if exists "leitura de aprovadas" on public.empresas;
 create policy "leitura de aprovadas" on public.empresas
-  for select to anon, authenticated using (status = 'aprovado');
+  for select to anon, authenticated using (aprovado);
 
 drop policy if exists "cadastro pendente" on public.empresas;
 create policy "cadastro pendente" on public.empresas
-  for insert to anon, authenticated with check (status = 'pendente');
+  for insert to anon, authenticated with check (not aprovado);
 
 revoke all on public.empresas from anon, authenticated;
 grant insert (nome, instagram, categoria, descricao, site, uf, cidade, lat, lng)
   on public.empresas to anon, authenticated;
 
 -- Busca única: filtros + texto + ordenação por distância (haversine, sem PostGIS).
--- security definer para ler a tabela sem expor SELECT direto; o filtro de status fica aqui.
+-- security definer para ler a tabela sem expor SELECT direto; o filtro de aprovação fica aqui.
 create or replace function public.buscar_empresas(
   p_q         text default null,
   p_uf        text default null,
@@ -85,7 +96,7 @@ language sql stable security definer set search_path = '' as $$
              + cos(radians(p_lat)) * cos(radians(e.lat)) * power(sin(radians(e.lng - p_lng) / 2), 2)))
          end as distancia_km
   from public.empresas e, termo
-  where e.status = 'aprovado'
+  where e.aprovado
     and (p_uf is null or e.uf = p_uf)
     and (p_cidade is null or e.cidade = p_cidade)
     and (p_categoria is null or e.categoria = p_categoria)
@@ -98,5 +109,5 @@ $$;
 revoke all on function public.buscar_empresas from public;
 grant execute on function public.buscar_empresas to anon, authenticated;
 
--- Moderação: aprove pelo Table Editor ou com
---   update public.empresas set status = 'aprovado' where id = <id>;
+-- Moderação: marque `aprovado` no Table Editor ou rode
+--   update public.empresas set aprovado = true where id = <id>;
