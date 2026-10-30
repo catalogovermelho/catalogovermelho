@@ -23,7 +23,20 @@ Sem configuração o site roda em **modo demonstração**: dados fictícios e ca
 2. No SQL Editor, rode `supabase/schema.sql`.
 3. Clique em **Connect** no topo do painel (ou Project Settings → API Keys) e copie a Project URL e a **Publishable key** (`sb_publishable_…`) para `js/config.js`. A anon key antiga, na aba *Legacy API Keys*, também funciona.
 
-A anon key é pública por design. A segurança fica no banco: o público só consegue cadastrar (sempre com `aprovado = false`) e só lê empresas aprovadas, via a função `buscar_empresas`.
+A chave é pública por design. A segurança fica no banco: o público só lê empresas aprovadas (função `buscar_empresas`) e não tem permissão de gravar na tabela. O cadastro passa pela Edge Function `cadastrar`, que exige captcha.
+
+### Captcha anti-spam (Cloudflare Turnstile, grátis)
+
+1. Em [dash.cloudflare.com](https://dash.cloudflare.com) → **Turnstile** → *Add widget*. Hostnames: `catalogovermelho.github.io` (e `localhost` para testes). Modo: *Managed*.
+2. Copie a **Site Key** para `TURNSTILE_SITE_KEY` em `js/config.js`.
+3. No Supabase → **Edge Functions → Secrets**, crie `TURNSTILE_SECRET` com a **Secret Key**. Opcional: `ALLOWED_ORIGINS=https://catalogovermelho.github.io`.
+4. Publique a função. Pelo painel: **Edge Functions → Deploy a new function → Via Editor**, nome `cadastrar`, cole `supabase/functions/cadastrar/index.ts` e, nas configurações da função, desligue **Verify JWT**. Ou pela CLI:
+
+   ```sh
+   supabase functions deploy cadastrar --no-verify-jwt --project-ref dsxiluvvunqhwbsvadoj
+   ```
+
+Chaves de teste do Turnstile (sempre passam): site `1x00000000000000000000AA`, secret `1x0000000000000000000000000000000AA`.
 
 **Moderação:** no Table Editor, marque a caixa `aprovado` da empresa, ou:
 
@@ -46,3 +59,5 @@ Em Settings → Pages, escolha **GitHub Actions** como fonte. O workflow `.githu
 | `js/links.js` | Links de Instagram e de rota |
 | `js/ibge.js` | Lista de cidades (API do IBGE, com cache) |
 | `supabase/schema.sql` | Tabela, RLS, índices e função de busca |
+| `supabase/functions/cadastrar` | Edge Function: valida captcha e grava cadastro |
+| `js/captcha.js` | Widget do Turnstile |

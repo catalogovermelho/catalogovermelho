@@ -17,28 +17,24 @@ export function buscarEmpresas(filtros, signal) {
   return modoDemo ? buscarLocal(filtros) : buscarRemoto(filtros, signal);
 }
 
-export function cadastrarEmpresa(empresa) {
-  return modoDemo ? cadastrarLocal(empresa) : cadastrarRemoto(empresa);
+/** @param {string} [captcha] token do Turnstile, exigido fora do modo demo */
+export function cadastrarEmpresa(empresa, captcha) {
+  return modoDemo ? cadastrarLocal(empresa) : cadastrarRemoto(empresa, captcha);
 }
 
-// ---------- Supabase (PostgREST via fetch, sem SDK) ----------
+// ---------- Supabase (REST via fetch, sem SDK) ----------
 
-async function postRest(caminho, corpo, { signal, prefer } = {}) {
+function postSupabase(caminho, corpo, signal) {
   const headers = { apikey: SUPABASE_ANON_KEY, 'Content-Type': 'application/json' };
   // Chave legada (JWT) também vai no Authorization; a publishable (sb_publishable_…) não.
   if (SUPABASE_ANON_KEY.startsWith('eyJ')) headers.Authorization = `Bearer ${SUPABASE_ANON_KEY}`;
-  if (prefer) headers.Prefer = prefer;
-
-  const resposta = await fetch(`${SUPABASE_URL}/rest/v1/${caminho}`, {
+  return fetch(`${SUPABASE_URL}/${caminho}`, {
     method: 'POST', headers, body: JSON.stringify(corpo), signal,
   });
-  if (resposta.status === 409) throw new ErroCadastro('Este Instagram já está cadastrado.');
-  if (!resposta.ok) throw new Error(`Erro ${resposta.status} ao falar com o servidor.`);
-  return resposta.status === 204 || resposta.status === 201 ? null : resposta.json();
 }
 
-function buscarRemoto({ q, uf, cidade, categoria, origem, pagina = 0 }, signal) {
-  return postRest('rpc/buscar_empresas', {
+async function buscarRemoto({ q, uf, cidade, categoria, origem, pagina = 0 }, signal) {
+  const resposta = await postSupabase('rest/v1/rpc/buscar_empresas', {
     p_q: q || null,
     p_uf: uf || null,
     p_cidade: cidade || null,
@@ -47,11 +43,18 @@ function buscarRemoto({ q, uf, cidade, categoria, origem, pagina = 0 }, signal) 
     p_lng: origem?.lng ?? null,
     p_limite: TAMANHO_PAGINA,
     p_offset: pagina * TAMANHO_PAGINA,
-  }, { signal });
+  }, signal);
+  if (!resposta.ok) throw new Error(`Erro ${resposta.status} ao buscar empresas.`);
+  return resposta.json();
 }
 
-function cadastrarRemoto(empresa) {
-  return postRest('empresas', empresa, { prefer: 'return=minimal' });
+/** Grava pela Edge Function `cadastrar`, que valida o captcha. */
+async function cadastrarRemoto(empresa, captcha) {
+  const resposta = await postSupabase('functions/v1/cadastrar', { ...empresa, captcha });
+  if (resposta.ok) return;
+  const { erro } = await resposta.json().catch(() => ({}));
+  if (resposta.status < 500 && erro) throw new ErroCadastro(erro);
+  throw new Error(`Erro ${resposta.status} ao falar com o servidor.`);
 }
 
 // ---------- Modo demonstração (localStorage) ----------

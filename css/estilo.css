@@ -326,6 +326,7 @@ input[aria-invalid='true'], select[aria-invalid='true'] { border-color: var(--ve
 .dica { display: block; margin-top: .3rem; color: #555; }
 .erro { display: block; color: var(--vermelho); font-weight: 700; }
 .erro:empty { display: none; }
+.captcha:not(:empty) { margin-top: .5rem; min-height: 65px; }
 
 /* ---------- Rodapé ---------- */
 
