@@ -33,20 +33,20 @@
         <input type="search" name="q" placeholder="Buscar por nome, produto ou @" autocomplete="off">
       </label>
       <label>
+        <span class="rotulo">Ramo</span>
+        <select name="categoria"><option value="">Todos</option></select>
+      </label>
+      <label>
         <span class="rotulo">Estado</span>
         <select name="uf"><option value="">Todo o Brasil</option></select>
       </label>
-      <label>
+      <label class="filtros__cidade">
         <span class="rotulo">Cidade</span>
         <select name="cidade" disabled><option value="">Todas</option></select>
       </label>
       <button type="button" id="perto" class="botao botao--contorno" aria-pressed="false">
         <svg aria-hidden="true"><use href="img/icones.svg#alvo"/></svg> Perto de mim
       </button>
-      <fieldset class="ramos">
-        <legend class="sr-only">Ramo</legend>
-        <label class="ramo"><input type="radio" name="categoria" value="" checked><span>Todos</span></label>
-      </fieldset>
     </form>
 
     <p id="status" class="status" role="status" aria-live="polite"></p>

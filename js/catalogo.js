@@ -3,7 +3,7 @@ import { buscarEmpresas, modoDemo, TAMANHO_PAGINA } from './repositorio.js';
 import { formatarDistancia, obterPosicao } from './geo.js';
 import { fotoInstagram, linkInstagram, linksDeRota } from './links.js';
 import { debounce } from './texto.js';
-import { preencherCidades, preencherUfs } from './ui.js';
+import { adicionarOpcoes, preencherCidades, preencherUfs } from './ui.js';
 
 const form = document.getElementById('filtros');
 const lista = document.getElementById('lista');
@@ -111,19 +111,6 @@ async function alternarPerto() {
   carregar();
 }
 
-function montarRamos() {
-  const grupo = form.querySelector('.ramos');
-  const base = grupo.querySelector('.ramo');
-  grupo.append(...CATEGORIAS.map(({ id, nome }) => {
-    const ramo = base.cloneNode(true);
-    const radio = ramo.querySelector('input');
-    radio.value = id;
-    radio.checked = false;
-    ramo.querySelector('span').textContent = nome;
-    return ramo;
-  }));
-}
-
 function fecharMenusDeRota({ target }) {
   for (const menu of lista.querySelectorAll('.rota[open]')) {
     if (!menu.contains(target)) menu.open = false;
@@ -136,8 +123,7 @@ async function restaurarFiltros() {
   const { q, uf, categoria, cidade } = form.elements;
   q.value = params.get('q') ?? '';
   uf.value = params.get('uf') ?? '';
-  const radio = [...categoria].find((r) => r.value === (params.get('categoria') ?? ''));
-  if (radio) radio.checked = true;
+  categoria.value = params.get('categoria') ?? '';
   if (uf.value) await preencherCidades(cidade, uf.value, params.get('cidade') ?? '').catch(() => {});
 }
 
@@ -154,7 +140,7 @@ function iniciar() {
   document.getElementById('aviso-demo').hidden = !modoDemo;
   mostrarAvisoCadastro();
   preencherUfs(form.elements.uf);
-  montarRamos();
+  adicionarOpcoes(form.elements.categoria, CATEGORIAS.map(({ id, nome }) => ({ valor: id, texto: nome })));
 
   const buscarComAtraso = debounce(() => carregar(), 300);
   form.addEventListener('input', (evento) => {

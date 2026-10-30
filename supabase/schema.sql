@@ -73,7 +73,7 @@ create or replace function public.buscar_empresas(
   p_categoria text default null,
   p_lat       double precision default null,
   p_lng       double precision default null,
-  p_limite    int default 24,
+  p_limite    int default 20,
   p_offset    int default 0
 )
 returns table (
