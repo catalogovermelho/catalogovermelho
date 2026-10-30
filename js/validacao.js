@@ -35,6 +35,18 @@ export function normalizarSite(valor = '') {
   }
 }
 
+/** Link direto de imagem; só https, para não gerar conteúdo misto na página. */
+export function normalizarImagem(valor = '') {
+  const imagem = valor.trim();
+  if (!imagem) return null;
+  try {
+    const url = new URL(imagem);
+    return url.protocol === 'https:' && url.hostname.includes('.') ? url.href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /**
  * Valida o formulário de cadastro.
  * @returns {{ empresa: object|null, erros: Record<string, string> }}
@@ -47,12 +59,14 @@ export function validarEmpresa(dados) {
   const cidade = dados.cidade?.trim() ?? '';
   const coordenadas = parseCoordenadas(dados.coordenadas);
   const site = normalizarSite(dados.site);
+  const imagem = normalizarImagem(dados.imagem);
 
   if (nome.length < 2 || nome.length > 80) erros.nome = 'Informe um nome entre 2 e 80 caracteres.';
   if (!INSTAGRAM.test(instagram)) erros.instagram = 'Informe um @ do Instagram válido.';
   if (!isCategoria(dados.categoria)) erros.categoria = 'Escolha um ramo.';
   if (descricao && descricao.length > 280) erros.descricao = 'Máximo de 280 caracteres.';
   if (site === undefined) erros.site = 'Link inválido.';
+  if (imagem === undefined) erros.imagem = 'Use um link https:// direto para a imagem.';
   if (!isUf(dados.uf)) erros.uf = 'Escolha o estado.';
   if (cidade.length < 2) erros.cidade = 'Escolha a cidade.';
   if (!coordenadas) erros.coordenadas = 'Coordenada inválida ou fora do Brasil. Ex.: -23.5505, -46.6333';
@@ -61,7 +75,7 @@ export function validarEmpresa(dados) {
 
   return {
     empresa: {
-      nome, instagram, categoria: dados.categoria, descricao, site,
+      nome, instagram, categoria: dados.categoria, descricao, site, imagem,
       uf: dados.uf, cidade, lat: coordenadas.lat, lng: coordenadas.lng,
     },
     erros,

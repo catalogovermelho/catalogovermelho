@@ -5,7 +5,7 @@
 //   TURNSTILE_SECRET   chave secreta do Turnstile
 //   ALLOWED_ORIGINS    opcional, ex.: https://catalogovermelho.github.io,http://localhost:8080
 
-const CAMPOS = ['nome', 'instagram', 'categoria', 'descricao', 'site', 'uf', 'cidade', 'lat', 'lng'] as const;
+const CAMPOS = ['nome', 'instagram', 'categoria', 'descricao', 'site', 'imagem', 'uf', 'cidade', 'lat', 'lng'] as const;
 const TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
 const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!;

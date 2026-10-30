@@ -13,6 +13,7 @@ create table if not exists public.empresas (
                'educacao', 'tecnologia', 'casa-construcao', 'automotivo', 'pets', 'turismo', 'outros')),
   descricao  text check (char_length(descricao) <= 280),
   site       text check (site ~ '^https?://' and char_length(site) <= 500),
+  imagem     text check (imagem ~ '^https://' and char_length(imagem) <= 500),
   uf         char(2) not null check (uf in (
                'AC','AL','AP','AM','BA','CE','DF','ES','GO','MA','MT','MS','MG','PA',
                'PB','PR','PE','PI','RJ','RN','RS','RO','RR','SC','SP','SE','TO')),
@@ -26,6 +27,8 @@ create table if not exists public.empresas (
 
 -- Migração: bancos criados com a coluna antiga `status` passam a usar `aprovado`.
 alter table public.empresas add column if not exists aprovado boolean not null default false;
+alter table public.empresas add column if not exists imagem text
+  check (imagem ~ '^https://' and char_length(imagem) <= 500);
 do $$
 begin
   if exists (select 1 from information_schema.columns
@@ -66,7 +69,9 @@ revoke all on public.empresas from anon, authenticated;
 
 -- Busca única: filtros + texto + ordenação por distância (haversine, sem PostGIS).
 -- security definer para ler a tabela sem expor SELECT direto; o filtro de aprovação fica aqui.
-create or replace function public.buscar_empresas(
+-- drop antes do create: o tipo de retorno muda entre versões.
+drop function if exists public.buscar_empresas(text, text, text, text, double precision, double precision, int, int);
+create function public.buscar_empresas(
   p_q         text default null,
   p_uf        text default null,
   p_cidade    text default null,
@@ -77,7 +82,7 @@ create or replace function public.buscar_empresas(
   p_offset    int default 0
 )
 returns table (
-  id bigint, nome text, instagram text, categoria text, descricao text, site text,
+  id bigint, nome text, instagram text, categoria text, descricao text, site text, imagem text,
   uf text, cidade text, lat double precision, lng double precision, distancia_km double precision
 )
 language sql stable security definer set search_path = '' as $$
@@ -85,7 +90,7 @@ language sql stable security definer set search_path = '' as $$
     select '%' || replace(replace(replace(
              lower(extensions.unaccent(trim(p_q))), '\', '\\'), '%', '\%'), '_', '\_') || '%' as padrao
   )
-  select e.id, e.nome, e.instagram, e.categoria, e.descricao, e.site,
+  select e.id, e.nome, e.instagram, e.categoria, e.descricao, e.site, e.imagem,
          e.uf::text, e.cidade, e.lat, e.lng,
          case when p_lat is not null and p_lng is not null then
            12742 * asin(sqrt(
